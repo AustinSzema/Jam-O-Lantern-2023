@@ -105,6 +105,10 @@ MonoBehaviour:
   _moveSpeed: 2
   _rotationSpeed: 100
   _rigidbody: {fileID: 387548126668894877}
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _meshRenderer: {fileID: 0}
 --- !u!54 &387548126668894877
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -152,9 +156,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.006785955
-  m_Height: 0.029172448
+  m_Height: 0.029360678
   m_Direction: 1
-  m_Center: {x: 0.000007732771, y: -0.00020661112, z: 0.00040252705}
+  m_Center: {x: 0.00000773251, y: 0.0013140297, z: 0.00040252684}
 --- !u!1 &8487706760553850672
 GameObject:
   m_ObjectHideFlags: 0
