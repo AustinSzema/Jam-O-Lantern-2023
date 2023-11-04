@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FollowPlayer : MonoBehaviour
 {
@@ -15,6 +17,8 @@ public class FollowPlayer : MonoBehaviour
 
     [SerializeField] private MeshRenderer _meshRenderer;
 
+    
+    
     private Camera _camera;
 
     private bool _isMoving = true;
@@ -26,6 +30,29 @@ public class FollowPlayer : MonoBehaviour
 
     private Vector3 _cameraPosition;
 
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            LoseGame();
+        }
+    }
+
+    private void OnCollisionStay(Collision other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            LoseGame();
+        }
+    }
+
+    private void LoseGame()
+    {
+        SceneManager.LoadScene("Lose Screen");
+
+    }
+    
+    
     private void FixedUpdate()
     {
         _cameraPosition = _camera.transform.position;
