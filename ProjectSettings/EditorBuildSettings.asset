@@ -6,15 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/MainMenu.unity
+    path: Assets/Actual Game Stuff/Scenes/MainMenu.unity
     guid: 056ff320efd9ae64f92e94d73a858859
   - enabled: 1
     path: Assets/Actual Game Stuff/Scenes/Scary Baby.unity
     guid: d091dba92e6ea5e47999a94c2d70b38f
   - enabled: 1
-    path: Assets/Win Screen.unity
+    path: Assets/Actual Game Stuff/Scenes/Win Screen.unity
     guid: ae03e8208992f244ba30a34e16b5fba4
   - enabled: 1
-    path: Assets/Lose Screen.unity
+    path: Assets/Actual Game Stuff/Scenes/Lose Screen.unity
     guid: f07e44a908097834bb1f30653c1df11c
   m_configObjects: {}
