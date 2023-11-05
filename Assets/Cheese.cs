@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class Cheese : MonoBehaviour
 {
-    public int cheeseCount = 0;
+    [SerializeField] private intVariable _cheeseCount;
 
 
     
@@ -23,14 +23,15 @@ public class Cheese : MonoBehaviour
     private void Start()
     {
         _audioSource = FindObjectOfType<AudioSource>();
+        _cheeseCount.Value = 0;
     }
 
     private void Update()
     {
         // Rotate the object around the Y-axis
         transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
-        _cheeseCountText.text = "" + cheeseCount;
-        if (cheeseCount >= 6)
+        _cheeseCountText.text = "" + _cheeseCount.Value;
+        if (_cheeseCount.Value >= 6)
         {
             WinGame();
         }
@@ -38,16 +39,33 @@ public class Cheese : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        cheeseCount++;
-        _collider.enabled = false;
-        _meshRenderer.enabled = false;
+        if (other.CompareTag("Player"))
+        {
+            _cheeseCount.Value++;
+            _collider.enabled = false;
+            _meshRenderer.enabled = false;
 
-        _particles.Play();
-        _audioSource.PlayOneShot(_clip);
+            _particles.Play();
+            _audioSource.PlayOneShot(_clip);
+            
+        }
     }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            _cheeseCount.Value++;
+            _collider.enabled = false;
+            _meshRenderer.enabled = false;
 
+            _particles.Play();
+            _audioSource.PlayOneShot(_clip);
+            
+        }
+    }
+    
     private void WinGame()
     {
-        SceneManager.LoadScene("Win Scene");
+        SceneManager.LoadScene("Win Screen");
     }
 }

@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-
+using Random = UnityEngine.Random;
 public class FollowPlayer : MonoBehaviour
 {
+    
     [SerializeField] private Vector3Variable _playerPos;
 
     [SerializeField] private float _moveSpeed = 2f;
@@ -17,15 +19,32 @@ public class FollowPlayer : MonoBehaviour
 
     [SerializeField] private MeshRenderer _meshRenderer;
 
-    
+    [SerializeField] private AudioClip _jumpScareSound;
+    [SerializeField] private AudioClip[] _hitBabySounds;
+
+    [SerializeField] private AudioSource _audioSource;
     
     private Camera _camera;
 
     private bool _isMoving = true;
 
+    private BabyJumpScare _babyJumpScare;
+
+    private bool _lostGame = false;
+
+    private CharacterController _playerController;
+
+    private RandomBabySounds _babySounds;
+
+    private PlayerInput _playerInput;
+    
     private void Start()
     {
         _camera = Camera.main;
+        _babyJumpScare = FindObjectOfType<BabyJumpScare>(true);
+        _playerController = FindObjectOfType<CharacterController>();
+        _babySounds = FindObjectOfType<RandomBabySounds>();
+        _playerInput = FindObjectOfType<PlayerInput>();
     }
 
     private Vector3 _cameraPosition;
@@ -37,21 +56,51 @@ public class FollowPlayer : MonoBehaviour
             LoseGame();
         }
     }
-
-    private void OnCollisionStay(Collision other)
-    {
-        if (other.gameObject.tag == "Player")
-        {
-            LoseGame();
-        }
-    }
-
+    
     private void LoseGame()
     {
-        SceneManager.LoadScene("Lose Screen");
+        _cameraPosition = _camera.transform.position;
+
+        // Calculate the direction from the camera to the object
+        Vector3 direction = transform.position - _cameraPosition;
+
+        RaycastHit hit;
+        float maxDistance = direction.magnitude;
+        
+        if (Physics.Raycast(_cameraPosition, direction, out hit, maxDistance, _layerMask))
+        {
+            if (hit.collider.gameObject != gameObject || _meshRenderer.isVisible == false)
+            {
+                // The GameObject is behind a wall or obstacle.
+                Debug.Log("GameObject is behind a wall or is not visible to the camera.");
+                _babyJumpScare.gameObject.SetActive(true);
+                _audioSource.PlayOneShot(_jumpScareSound);
+            }
+            else
+            {
+                int index = Random.Range(0, _hitBabySounds.Length);
+                _audioSource.PlayOneShot(_hitBabySounds[index]);
+            }
+        }
+
+        _lostGame = true;
+        _playerController.enabled = false;
+        _babySounds.gameObject.SetActive(false);
+
+        _playerInput.enabled = false;
+        
+        StartCoroutine(GoToLoseScreen());
+        
+        Debug.Log("u died");
 
     }
-    
+
+    private IEnumerator GoToLoseScreen()
+    {
+
+        yield return new WaitUntil(() => _audioSource.isPlaying == false);
+        SceneManager.LoadScene("Lose Screen");
+    }
     
     private void FixedUpdate()
     {
@@ -64,24 +113,27 @@ public class FollowPlayer : MonoBehaviour
         float maxDistance = direction.magnitude;
 
 
-
-        if (Physics.Raycast(_cameraPosition, direction, out hit, maxDistance, _layerMask))
+        if (!_lostGame)
         {
-            if (hit.collider.gameObject != gameObject || _meshRenderer.isVisible == false)
+            if (Physics.Raycast(_cameraPosition, direction, out hit, maxDistance, _layerMask))
             {
-                // The GameObject is behind a wall or obstacle.
-                Debug.Log("GameObject is behind a wall or is not visible to the camera.");
-                _isMoving = true;
-            }
-            else
-            {
-                _isMoving = false;
-                Debug.Log("GameObject is visible to the camera");
+                if (hit.collider.gameObject != gameObject || _meshRenderer.isVisible == false)
+                {
+                    // The GameObject is behind a wall or obstacle.
+                    Debug.Log("GameObject is behind a wall or is not visible to the camera.");
+                    _isMoving = true;
+                }
+                else
+                {
+                    _isMoving = false;
+                    Debug.Log("GameObject is visible to the camera");
 
+                }
             }
+            
         }
 
-        if (_isMoving)
+        if (_isMoving || _lostGame)
             MoveBaby();
 
 
